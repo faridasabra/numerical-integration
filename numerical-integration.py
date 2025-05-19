@@ -40,15 +40,16 @@ def main():
     print("1- Composite Midpoint Rule")
     print("2- Composite Trapezoidal Rule")
     print("3- Composite Simpson's Rule")
+    print("4- All Methods")
 
     while True:
         try:
-            choice = input("\nEnter your choice (1-3, 0 to exit): ").strip()
+            choice = input("\nEnter your choice (1-4, 0 to exit): ").strip()
             if choice == '0':
                 break
             
-            if choice not in {'1', '2', '3'}:
-                print("Invalid choice. Please enter 1, 2, or 3.")
+            if choice not in {'1', '2', '3', '4'}:
+                print("Invalid choice. Please enter 1, 2, 3, or 4.")
                 continue
                 
             a = float(input("Enter lower bound (a): "))
@@ -57,30 +58,46 @@ def main():
                 print("Error: b must be greater than a")
                 continue
                 
-            n = int(input("Enter number of subintervals (n): "))
-            if n <= 0:
-                print("Error: n must be positive")
+            h = float(input("Enter step size (h): "))
+            if h <= 0 or h > (b - a):
+                print("Error: h must be positive and less than (b - a)")
                 continue
-            if choice == '3' and n % 2 != 0:
-                print("Warning: n should be even for Simpson's rule. Adding 1 to make it even.")
-                n += 1
-                
+
+            n = int((b - a) / h)
+            h = (b - a) / n  # Adjust h to match exact division
+
             expression = input("Enter function (e.g., 'x**2', 'sin(x)', 'exp(-x)'): ").strip()
             
             try:
                 if choice == '1':
                     result = calc_composite_midpoint(a, b, n, expression)
-                    method = "Composite Midpoint"
+                    print(f"\nComposite Midpoint Result: {result:.8f}")
+                
                 elif choice == '2':
                     result = composite_trapezoidal(a, b, n, expression)
-                    method = "Composite Trapezoidal"
-                else:
+                    print(f"\nComposite Trapezoidal Result: {result:.8f}")
+
+                elif choice == '3':
+                    if n % 2 != 0:
+                        print("Warning: Simpson's rule requires even n. Increasing n by 1.")
+                        n += 1
+                        h = (b - a) / n
                     result = composite_simpson(a, b, n, expression)
-                    method = "Composite Simpson's"
-                
-                print(f"\n{method} Result: {result:.8f}")
-                print(f"Parameters: a={a}, b={b}, n={n}, f(x)={expression}")
-                
+                    print(f"\nComposite Simpson's Result: {result:.8f}")
+
+                elif choice == '4':
+                    print("\n== Results Using All Methods ==")
+                    midpoint_result = calc_composite_midpoint(a, b, n, expression)
+                    trapezoidal_result = composite_trapezoidal(a, b, n, expression)
+                    simpson_n = n + 1 if n % 2 != 0 else n
+                    simpson_h = (b - a) / simpson_n
+                    simpson_result = composite_simpson(a, b, simpson_n, expression)
+
+                    print(f"Composite Midpoint Result   : {midpoint_result:.8f}")
+                    print(f"Composite Trapezoidal Result: {trapezoidal_result:.8f}")
+                    print(f"Composite Simpson's Result  : {simpson_result:.8f}")
+                    print(f"Parameters: a={a}, b={b}, h={h:.8f}, n={n}, f(x)={expression}")
+
             except ValueError as e:
                 print(f"Error: {e}")
                 
